@@ -1,7 +1,6 @@
 import os
 import json
-# from google import genai
-import google.generativeai as genai
+from google import genai
 from flask import Flask, render_template, request, jsonify
 from dotenv import load_dotenv
 
@@ -9,8 +8,8 @@ load_dotenv()
 
 app = Flask(__name__)
 
-# Configure the Gemini API key
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+# The client gets the API key from the environment variable `GEMINI_API_KEY`
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 
 def build_prompt(job_title: str) -> str:
@@ -43,8 +42,10 @@ def generate_questions():
         return jsonify({"error": "Job title is required"}), 400
 
     try:
-        model = genai.GenerativeModel('gemini-2.5-flash')
-        response = model.generate_content(build_prompt(job_title))
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=build_prompt(job_title)
+        )
         
         # Cleaning text, incase of any formatting issues, and parsing JSON
         cleaned_text = response.text.replace("```json", "").replace("```", "").strip()
