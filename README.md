@@ -8,9 +8,9 @@ You type in a job title, and it gives you three interview questions tailored to 
 
 ## How it works
 
-1. **You enter a job title** — Something like "Product Manager," "Data Analyst," or "Customer Success Manager"
-2. **The AI does the thinking** — It considers the actual responsibilities and challenges of that role
-3. **You get three questions** — Questions designed to uncover how the candidate really thinks, not just what they've memorized
+1. **You enter a job title**: Something like "Product Manager," "Data Analyst," or "Customer Success Manager"
+2. **The AI does the thinking**: It considers the actual responsibilities and challenges of that role
+3. **You get three questions**: Questions designed to uncover how the candidate really thinks, not just what they've memorized
 
 The questions are behavioral or situational in nature. They're meant to reveal authentic insights about how someone works, how they solve problems, and how they handle real situations on the job.
 
