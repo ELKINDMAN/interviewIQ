@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>InterviewIQ — Role-Based Question Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f5f3ee;
+      --surface: #ffffff;
+      --ink: #1a1814;
+      --ink-muted: #6b6760;
+      --ink-faint: #b0ada7;
+      --accent: #1a3a2a;
+      --accent-light: #e8f0eb;
+      --accent-mid: #4a7c5f;
+      --border: #e0ddd8;
+      --border-strong: #c8c4be;
+      --radius: 12px;
+      --radius-sm: 6px;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 3rem 1.25rem 5rem;
+    }
+
+    header { text-align: center; margin-bottom: 3rem; max-width: 560px; }
+
+    .eyebrow {
+      font-size: 11px; font-weight: 500;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--accent-mid); margin-bottom: 0.75rem;
+    }
+
+    h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2rem, 5vw, 3rem);
+      line-height: 1.1; color: var(--ink); margin-bottom: 0.75rem;
+    }
+
+    h1 em { font-style: italic; color: var(--accent-mid); }
+
+    .subtitle { font-size: 15px; color: var(--ink-muted); font-weight: 300; line-height: 1.6; }
+
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 2rem; width: 100%; max-width: 580px;
+    }
+
+    .input-group { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.25rem; }
+
+    label { font-size: 13px; font-weight: 500; color: var(--ink-muted); letter-spacing: 0.02em; }
+
+    input[type="text"] {
+      width: 100%; padding: 0.75rem 1rem;
+      font-family: 'DM Sans', sans-serif; font-size: 15px;
+      color: var(--ink); background: var(--bg);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm); outline: none;
+      transition: border-color 0.15s;
+    }
+
+    input[type="text"]:focus { border-color: var(--accent-mid); background: #fff; }
+    input[type="text"]::placeholder { color: var(--ink-faint); }
+
+    button {
+      width: 100%; padding: 0.8rem 1.5rem;
+      font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500;
+      color: #fff; background: var(--accent); border: none;
+      border-radius: var(--radius-sm); cursor: pointer;
+      transition: background 0.15s, opacity 0.15s;
+    }
+
+    button:hover:not(:disabled) { background: #0f2218; }
+    button:disabled { opacity: 0.55; cursor: not-allowed; }
+
+    .divider { border: none; border-top: 1px solid var(--border); margin: 1.75rem 0; }
+
+    .loader { display: none; flex-direction: column; align-items: center; gap: 0.75rem; padding: 1.5rem 0; }
+    .loader.active { display: flex; }
+
+    .dots { display: flex; gap: 6px; }
+
+    .dots span {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--accent-mid);
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+
+    .dots span:nth-child(2) { animation-delay: 0.2s; }
+    .dots span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes pulse {
+      0%, 80%, 100% { opacity: 0.2; transform: scale(0.85); }
+      40% { opacity: 1; transform: scale(1); }
+    }
+
+    .loader-text { font-size: 13px; color: var(--ink-muted); }
+
+    .results { display: none; }
+    .results.active { display: block; }
+
+    .results-header { display: flex; align-items: baseline; gap: 0.5rem; margin-bottom: 1.25rem; }
+
+    .results-title { font-family: 'DM Serif Display', serif; font-size: 1.1rem; color: var(--ink); }
+
+    .role-badge {
+      font-size: 12px; font-weight: 500;
+      color: var(--accent-mid); background: var(--accent-light);
+      border-radius: 100px; padding: 2px 10px;
+    }
+
+    .question-list { display: flex; flex-direction: column; gap: 1rem; }
+
+    .question-item {
+      display: flex; gap: 1rem; align-items: flex-start;
+      padding: 1rem 1.125rem; background: var(--bg);
+      border-radius: var(--radius-sm);
+      border-left: 3px solid var(--accent-mid);
+      animation: fadeUp 0.3s ease both;
+    }
+
+    .question-item:nth-child(2) { animation-delay: 0.08s; }
+    .question-item:nth-child(3) { animation-delay: 0.16s; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .q-number { font-size: 11px; font-weight: 500; color: var(--accent-mid); letter-spacing: 0.06em; padding-top: 2px; min-width: 20px; }
+    .q-text { font-size: 15px; line-height: 1.6; color: var(--ink); font-weight: 300; }
+
+    .error-msg {
+      display: none; font-size: 13px; color: #b34040;
+      background: #fdf0f0; border: 1px solid #f0c8c8;
+      border-radius: var(--radius-sm); padding: 0.75rem 1rem; margin-top: 1rem;
+    }
+
+    .error-msg.active { display: block; }
+
+    footer { margin-top: 2.5rem; font-size: 12px; color: var(--ink-faint); text-align: center; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <p class="eyebrow">AI-Powered Hiring Tool</p>
+    <h1>Interview questions,<br /><em>built for the role</em></h1>
+    <p class="subtitle">Enter any job title and get three thoughtful, role-specific interview questions — generated by AI, grounded in what the job actually demands.</p>
+  </header>
+
+  <div class="card">
+    <div class="input-group">
+      <label for="jobTitle">Job title</label>
+      <input type="text" id="jobTitle" placeholder="e.g. Customer Success Manager" autocomplete="off" />
+    </div>
+    <button id="generateBtn" onclick="generateQuestions()">Generate questions</button>
+    <div class="error-msg" id="errorMsg"></div>
+    <div class="loader" id="loader">
+      <div class="dots"><span></span><span></span><span></span></div>
+      <p class="loader-text">Thinking about this role...</p>
+    </div>
+    <div class="results" id="results">
+      <hr class="divider" />
+      <div class="results-header">
+        <span class="results-title">Questions for</span>
+        <span class="role-badge" id="roleLabel"></span>
+      </div>
+      <div class="question-list" id="questionList"></div>
+    </div>
+  </div>
+
+  <footer>Powered by Gemini &mdash; built by Elkanah</footer>
+
+  <script>
+    async function generateQuestions() {
+      const input = document.getElementById("jobTitle");
+      const jobTitle = input.value.trim();
+
+      const btn = document.getElementById("generateBtn");
+      const loader = document.getElementById("loader");
+      const results = document.getElementById("results");
+      const errorMsg = document.getElementById("errorMsg");
+
+      results.classList.remove("active");
+      errorMsg.classList.remove("active");
+
+      if (!jobTitle) {
+        errorMsg.textContent = "Please enter a job title before generating questions.";
+        errorMsg.classList.add("active");
+        return;
+      }
+
+      btn.disabled = true;
+      loader.classList.add("active");
+
+      try {
+        const response = await fetch("/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ jobTitle })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Something went wrong.");
+        }
+
+        const questions = data.questions;
+
+        document.getElementById("roleLabel").textContent = jobTitle;
+        const list = document.getElementById("questionList");
+        list.innerHTML = "";
+
+        questions.slice(0, 3).forEach(function(q, i) {
+          const item = document.createElement("div");
+          item.className = "question-item";
+          item.innerHTML =
+            '<span class="q-number">Q' + (i + 1) + '</span>' +
+            '<p class="q-text">' + escapeHtml(q) + '</p>';
+          list.appendChild(item);
+        });
+
+        results.classList.add("active");
+
+      } catch (err) {
+        errorMsg.textContent = "Something went wrong: " + err.message;
+        errorMsg.classList.add("active");
+      } finally {
+        loader.classList.remove("active");
+        btn.disabled = false;
+      }
+    }
+
+    function escapeHtml(str) {
+      return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    document.getElementById("jobTitle").addEventListener("keydown", function(e) {
+      if (e.key === "Enter") generateQuestions();
+    });
+  </script>
+
+</body>
+</html>

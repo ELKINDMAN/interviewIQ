@@ -1,0 +1,6 @@
+resources/
+interview.md
+.env
+int
+*.pyc
+*.cpython
